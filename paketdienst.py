@@ -24,6 +24,11 @@ def upgrade_pip():
         print("Aktualisiere pip...")
         subprocess.run("python -m pip install --upgrade pip", shell=True)
 
+def dry_run_upgrade(package):
+    """ Führt eine 'dry run' Aktualisierung durch, um zu sehen, was geändert würde. """
+    result = subprocess.run(f"pip install --upgrade --dry-run {package}", shell=True, capture_output=True, text=True)
+    return result.stdout
+
 # Pip zuerst aktualisieren
 upgrade_pip()
 
@@ -41,12 +46,12 @@ with open(log_file, "w") as log:
 
     # Jedes Paket aktualisieren und Log führen
     for package in packages:
-        log.write(f"Aktualisiere {package}\n")
-        result = subprocess.run(f"pip install --upgrade {package}", shell=True, capture_output=True, text=True)
-        log.write(result.stdout)
-        if result.stderr:
-            log.write("Fehler:\n")
-            log.write(result.stderr)
+        log.write(f"Überprüfe mögliche Aktualisierungen für {package} (Dry Run)\n")
+        dry_run_result = dry_run_upgrade(package)
+        log.write(dry_run_result)
         log.write("\n")
+
+        # Hier können Sie entscheiden, ob Sie das Upgrade basierend auf dem Dry-Run-Ergebnis durchführen möchten
+        # ...
 
 print(f"Aktualisierung abgeschlossen. Log-Datei gespeichert unter: {log_file}")
