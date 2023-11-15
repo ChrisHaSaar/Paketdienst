@@ -20,17 +20,45 @@ SENDER_EMAIL = "your_email@example.com"
 RECIPIENT_EMAIL = "recipient_email@example.com"
 
 
-
 def upgrade_pip(logger):
     """ Führt ein Upgrade von pip durch, falls erforderlich. """
     log_step(logger, "Prüfe und aktualisiere pip...")
-    result = subprocess.run("pip list --outdated", shell=True, capture_output=True, text=True)
-    if 'pip' in result.stdout:
+    result = subprocess.run("pip list --outdated --format=json", shell=True, capture_output=True, text=True)
+
+    outdated_packages = json.loads(result.stdout)
+    packages_to_update = [package for package in outdated_packages if package['name'] == 'pip']
+
+    if packages_to_update:
+        log_step(logger, "pip wird aktualisiert...")
         subprocess.run("python -m pip install --upgrade pip", shell=True)
-        log_step(logger, "pip aktualisiert.")
+        log_step(logger, "pip erfolgreich aktualisiert.")
     else:
         log_step(logger, "pip ist bereits auf dem neuesten Stand.")
 
+    # Tabelle für die Log-Datei erstellen
+    log_table = ["Paketname\tAlte Version\tNeue Version\tUpdate erfolgreich"]
+
+    for package in outdated_packages:
+        package_name = package["name"]
+        old_version = package["version"]
+
+        log_step(logger, f"Prüfe und aktualisiere {package_name}...")
+        result = subprocess.run(f"python -m pip install --upgrade {package_name}", shell=True, capture_output=True,
+                                text=True)
+
+        if result.returncode == 0:
+            new_version = metadata.version(package_name)
+            log_table.append(f"{package_name}\t{old_version}\t{new_version}\tJa")
+            log_step(logger, f"{package_name} erfolgreich aktualisiert.")
+        else:
+            log_table.append(f"{package_name}\t{old_version}\t{old_version}\tNein")
+            log_step(logger, f"{package_name} konnte nicht aktualisiert werden.")
+
+    # Log-Tabelle in die Log-Datei schreiben
+    log_step(logger, "\nAktualisierte Paket-Tabelle:")
+    for row in log_table:
+        logger.info(row)
+        print(row, end="")  # Gibt die Nachricht auch im Terminal aus
 
 
 def log_step(logger, message):
@@ -88,8 +116,9 @@ def main():
     with open(UPDATE_CONFIG_FILE) as config_file:
         config = json.load(config_file)
 
-    log_level = getattr(logging, config.get("log_level", "INFO").upper())
-    logger = configure_logger(log_file, log_level)
+    log_level_str = config.get("log_level", "INFO").upper()
+    log_level = getattr(logging, log_level_str)
+    logger = configure_logger(log_file, log_level)  # Stelle sicher, dass logger korrekt definiert ist
 
     log_step(logger, "Aktualisierungsprozess gestartet.")
 
@@ -97,9 +126,9 @@ def main():
     auto_update_packages = config.get("auto_update", [])
     manual_update_packages = config.get("manual_update", [])
 
-    if config.get("enable_email", False):
-        upgrade_pip(logger)
+    upgrade_pip(logger)  # Unabhängig von der Einstellung in der JSON-Datei immer ausführen
 
+    if config.get("enable_email", False):
         # Jedes Paket überprüfen und ggf. aktualisieren
         for dist in metadata.distributions():
             package = dist.metadata['Name']
@@ -116,6 +145,7 @@ def main():
         send_email(log_file)
     else:
         log_step(logger, "E-Mail-Funktion ist deaktiviert. Der Aktualisierungsprozess wird ohne E-Mail-Benachrichtigung durchgeführt.")
+        subprocess.run("python -m pip install --upgrade colorama", shell=True)
 
 
 if __name__ == "__main__":

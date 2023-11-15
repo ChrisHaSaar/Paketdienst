@@ -1,0 +1,7 @@
+2023-11-15 16:09:28,746 - INFO - [2023-11-15 16:09:28] Aktualisierungsprozess gestartet.
+2023-11-15 16:09:28,746 - INFO - [2023-11-15 16:09:28] Prüfe und aktualisiere pip...
+2023-11-15 16:09:30,104 - INFO - [2023-11-15 16:09:30] pip ist bereits auf dem neuesten Stand.
+2023-11-15 16:09:30,104 - INFO - [2023-11-15 16:09:30] 
+Aktualisierte Paket-Tabelle:
+2023-11-15 16:09:30,104 - INFO - Paketname            Alte Version    Neue Version    Update erfolgreich  
+2023-11-15 16:09:30,104 - INFO - [2023-11-15 16:09:30] E-Mail-Funktion ist deaktiviert. Der Aktualisierungsprozess wird ohne E-Mail-Benachrichtigung durchgeführt.
