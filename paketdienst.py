@@ -6,6 +6,8 @@ Danach werden alle installierten Pakete gecheckt und notfalls erneuert.
 In dem Verzeichnis Log-Files werden die entsprechenden Log-Dateien angelegt.
 damit man weiß, was genau passiert ist.
 
+Genauere Beschreibung findest Du in der README.md
+
 geschrieben von:
 Christian Hammenstede, 15.11.2023
 christian.hammenstede@gmail.com
