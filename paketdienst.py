@@ -1,13 +1,14 @@
-import pkg_resources
 import subprocess
 from datetime import datetime
+from importlib import metadata
 
 # Log-Datei erstellen
 log_file = f"pip_upgrade_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 
 with open(log_file, "w") as log:
     # Liste aller installierten Pakete erhalten
-    packages = [dist.project_name for dist in pkg_resources.working_set]
+    distributions = metadata.distributions()
+    packages = [dist.metadata['Name'] for dist in distributions]
 
     # Jedes Paket aktualisieren und Log führen
     for package in packages:
