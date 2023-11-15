@@ -1,5 +1,16 @@
-import pkg_resources
 import subprocess
+
+# Funktion zur Installation fehlender Module
+def install_module(module):
+    subprocess.call(f"pip install {module}", shell=True)
+
+# Überprüfen, ob 'pkg_resources' installiert ist, und falls nicht, installieren
+try:
+    import pkg_resources
+except ImportError:
+    install_module('setuptools')
+    import pkg_resources
+
 from datetime import datetime
 
 # Log-Datei erstellen
