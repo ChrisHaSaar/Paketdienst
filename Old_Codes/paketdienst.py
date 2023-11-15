@@ -65,7 +65,7 @@ def manual_confirmation_upgrade(log, package):
 
 def main():
     # Konfigurationsdatei lesen
-    with open('update_config.json') as config_file:
+    with open('../update_config.json') as config_file:
         config = json.load(config_file)
 
     auto_update_packages = config.get("auto_update", [])
@@ -73,7 +73,7 @@ def main():
 
     # Pfad für den Log-Ordner festlegen und erstellen, falls nicht vorhanden
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    log_folder = os.path.join(script_directory, "Log-Files")
+    log_folder = os.path.join(script_directory, "../Log-Files")
     os.makedirs(log_folder, exist_ok=True)
 
     # Log-Datei-Pfad erstellen
