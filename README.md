@@ -53,7 +53,7 @@ Die `update_config.json`-Datei ermöglicht die Konfiguration des Log-Levels für
 **Autor:** Christian Hammenstede  
 **E-Mail:** christian.hammenstede@gmail.com  
 **Datum:** 15.11.2023
-
+**Version:** 1.0  
 --- 
 
 *Hinweis: Ersetzen Sie alle Dummy-Werte durch Ihre eigenen Informationen.*
