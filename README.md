@@ -6,6 +6,13 @@ Python-Paketaktualisierungsskript
 Beschreibung:
 Dieses Python-Skript mit dem Titel "Paketdienst" automatisiert den Prozess der Überprüfung und Aktualisierung von Python-Paketen mithilfe des Paketmanagers pip. Das Skript stellt sicher, dass pip selbst auf dem neuesten Stand ist, überprüft dann alle installierten Pakete und bietet die Möglichkeit, diese zu aktualisieren. Zusätzlich generiert es detaillierte Protokolldateien im Verzeichnis "Log-Files", um einen klaren Überblick über den Aktualisierungsprozess zu liefern.
 
+Neue Funktionen:
+
+Batch-Entscheidungen: 
+Ermöglicht es dem Benutzer, Entscheidungen für mehrere Pakete gleichzeitig zu treffen, wie z.B. alle Minor-Updates oder alle Updates für eine bestimmte Auswahl von Paketen.
+
+Automatische Entscheidungen mit manueller Überprüfungsoption: Führt standardmäßig alle Updates durch, bietet jedoch eine Option, bei der das Skript vor jedem Update pausiert, damit der Benutzer entscheiden kann.
+
 Funktionen:
 Überprüft und aktualisiert pip auf die neueste Version, falls erforderlich.
 Untersucht installierte Pakete und führt automatische Aktualisierungen für vordefinierte Pakete durch.
@@ -35,18 +42,24 @@ Hinweis:
 
 ===========================================
 
-
 ENGLISH:
 Python Package Update Script
 
 Description:
 This Python script, titled "Paketdienst" (Package Service), automates the process of checking and updating Python packages using the pip package manager. The script ensures that pip itself is up to date and then examines all installed packages, offering the option to update them. Additionally, it generates detailed log files in the "Log-Files" directory, providing a clear record of the update process.
 
+New Features:
+
+Batch Decisions: 
+Allows the user to make decisions for multiple packages simultaneously, such as all minor updates or all updates for a specific selection of packages.
+
+Automatic Decisions with Manual Confirmation Option: Defaults to performing all updates but offers an option where the script pauses before each update for the user to decide.
+
 Features:
 Checks and upgrades pip to the latest version if needed.
 Examines installed packages and performs automatic updates for predefined packages.
 Allows for manual confirmation before updating specific packages.
-Creates log files in the "Log-Files" directory to document the update process.
+Creates log files in the "Log-Files" directory to document the update process in detail.
 
 Author:
 Christian Hammenstede
@@ -61,6 +74,7 @@ Log files are generated in the "Log-Files" directory, providing detailed informa
 
 Configuration:
 The script reads configuration settings from update_config.json, allowing customization of auto-update and manual-update lists.
+
 Example Usage:
 
 python Paketdienst.py
