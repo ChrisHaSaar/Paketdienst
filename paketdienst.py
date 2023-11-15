@@ -21,33 +21,46 @@ from datetime import datetime
 from importlib import metadata
 
 
-def upgrade_pip():
+def log_step(log, message):
+    """ Protokolliert einen Schritt im Log. """
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    log_entry = f"[{timestamp}] {message}\n"
+    log.write(log_entry)
+    print(log_entry, end="")  # Gibt die Nachricht auch im Terminal aus
+
+
+def upgrade_pip(log):
     """ Führt ein Upgrade von pip durch, falls erforderlich. """
+    log_step(log, "Prüfe und aktualisiere pip...")
     result = subprocess.run("pip list --outdated", shell=True, capture_output=True, text=True)
     if 'pip' in result.stdout:
         subprocess.run("python -m pip install --upgrade pip", shell=True)
+        log_step(log, "pip aktualisiert.")
 
 
-def dry_run_upgrade(package):
+def dry_run_upgrade(log, package):
     """ Führt eine 'dry run' Aktualisierung durch, um zu sehen, was geändert würde. """
+    log_step(log, f"Prüfe, was sich bei der Aktualisierung von {package} ändern würde...")
     result = subprocess.run(f"pip install --upgrade --dry-run {package}", shell=True, capture_output=True, text=True)
-    return result.stdout
+    log_step(log, result.stdout)
 
 
-def batch_upgrade_decision(packages):
+def batch_upgrade_decision(log, packages):
     """ Führt eine Aktualisierung für eine Liste von Paketen durch. """
     for package in packages:
-        log.write(f"Aktualisiere {package} automatisch\n")
+        log_step(log, f"Aktualisiere {package} automatisch...")
         subprocess.run(f"pip install --upgrade {package}", shell=True)
+        log_step(log, f"{package} aktualisiert.")
 
 
-def manual_confirmation_upgrade(package):
+def manual_confirmation_upgrade(log, package):
     """ Führt eine manuelle Aktualisierung mit Bestätigung durch. """
-    dry_run_result = dry_run_upgrade(package)
+    dry_run_upgrade(log, package)
     decision = input(f"Möchten Sie {package} aktualisieren? [y/n]: ").strip().lower()
     if decision == 'y':
-        log.write(f"Aktualisiere {package} manuell\n")
+        log_step(log, f"Aktualisiere {package} manuell...")
         subprocess.run(f"pip install --upgrade {package}", shell=True)
+        log_step(log, f"{package} aktualisiert.")
 
 
 def main():
@@ -58,34 +71,30 @@ def main():
     auto_update_packages = config.get("auto_update", [])
     manual_update_packages = config.get("manual_update", [])
 
-    # Batch-Entscheidung
-    batch_decision = input("Möchten Sie alle Pakete automatisch aktualisieren? [y/n]: ").strip().lower()
-    if batch_decision == 'y':
-        batch_upgrade_decision(auto_update_packages)
-    else:
-        # Automatische Entscheidungen mit manueller Überprüfungsoption
-        upgrade_pip()
+    # Pfad für den Log-Ordner festlegen und erstellen, falls nicht vorhanden
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    log_folder = os.path.join(script_directory, "Log-Files")
+    os.makedirs(log_folder, exist_ok=True)
 
-        # Pfad für den Log-Ordner festlegen und erstellen, falls nicht vorhanden
-        log_folder = "Log-Files"
-        os.makedirs(log_folder, exist_ok=True)
+    # Log-Datei-Pfad erstellen
+    log_file = os.path.join(log_folder, f"pip_upgrade_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
 
-        # Log-Datei-Pfad erstellen
-        log_file = os.path.join(log_folder, f"pip_upgrade_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+    with open(log_file, "w") as log:
+        log_step(log, "Aktualisierungsprozess gestartet.")
 
-        with open(log_file, "w") as log:
-            # Jedes Paket überprüfen und ggf. aktualisieren
-            for dist in metadata.distributions():
-                package = dist.metadata['Name']
-                if package in auto_update_packages:
-                    # Automatische Aktualisierung
-                    log.write(f"Aktualisiere {package} automatisch\n")
-                    subprocess.run(f"pip install --upgrade {package}", shell=True)
-                elif package in manual_update_packages:
-                    # Manuelle Aktualisierung mit Bestätigung
-                    manual_confirmation_upgrade(package)
+        upgrade_pip(log)
 
-        print(f"Aktualisierung abgeschlossen. Log-Datei gespeichert unter: {log_file}")
+        # Jedes Paket überprüfen und ggf. aktualisieren
+        for dist in metadata.distributions():
+            package = dist.metadata['Name']
+            if package in auto_update_packages:
+                # Automatische Aktualisierung
+                batch_upgrade_decision(log, auto_update_packages)
+            elif package in manual_update_packages:
+                # Manuelle Aktualisierung mit Bestätigung
+                manual_confirmation_upgrade(log, package)
+
+        log_step(log, "Aktualisierungsprozess abgeschlossen.")
 
 
 if __name__ == "__main__":
