@@ -32,6 +32,22 @@ python paketdienst_mit_email.py
 
 Überprüfen Sie die generierte Protokolldatei für eine umfassende Übersicht über den Aktualisierungsprozess. Beachten Sie, dass eine funktionierende Internetverbindung erforderlich ist, um die E-Mail-Benachrichtigung zu senden.
 
+
+### Log-Level-Einstellungen
+
+Die `update_config.json`-Datei ermöglicht die Konfiguration des Log-Levels für die Protokollierung. Das Log-Level steuert, welche Nachrichten im Protokoll erscheinen, und kann je nach Bedarf angepasst werden. Die verfügbaren Log-Level sind:
+
+- **DEBUG:** Das detaillierteste Log-Level. Geeignet für Entwicklungs- und Debugging-Zwecke. Zeigt ausführliche Informationen zu jedem Schritt im Aktualisierungsprozess.
+
+- **INFO:** Allgemeine Informationen zum Fortschritt des Aktualisierungsprozesses. Zeigt wichtige Schritte und Statusmeldungen an.
+
+- **WARNING:** Warnungen, die auf potenzielle Probleme hinweisen. Das Skript kann fortgesetzt werden, aber es gibt möglicherweise Dinge, die überprüft werden sollten.
+
+- **ERROR:** Fehler, die den normalen Ablauf des Skripts unterbrechen. Das Skript wird gestoppt, wenn ein Fehler auftritt.
+
+- **CRITICAL:** Kritische Fehler, die das Skript zum sofortigen Halt bringen. Es ist eine umgehende Überprüfung und Behebung erforderlich.
+
+
 ---
 
 **Autor:** Christian Hammenstede  

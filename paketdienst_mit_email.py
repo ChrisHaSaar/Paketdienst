@@ -20,6 +20,19 @@ SENDER_EMAIL = "your_email@example.com"
 RECIPIENT_EMAIL = "recipient_email@example.com"
 
 
+
+def upgrade_pip(logger):
+    """ Führt ein Upgrade von pip durch, falls erforderlich. """
+    log_step(logger, "Prüfe und aktualisiere pip...")
+    result = subprocess.run("pip list --outdated", shell=True, capture_output=True, text=True)
+    if 'pip' in result.stdout:
+        subprocess.run("python -m pip install --upgrade pip", shell=True)
+        log_step(logger, "pip aktualisiert.")
+    else:
+        log_step(logger, "pip ist bereits auf dem neuesten Stand.")
+
+
+
 def log_step(logger, message):
     """ Protokolliert einen Schritt im Log. """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -28,10 +41,10 @@ def log_step(logger, message):
     print(log_entry, end="")  # Gibt die Nachricht auch im Terminal aus
 
 
-def configure_logger(log_file):
+def configure_logger(log_file, log_level):
     """ Konfiguriert den Logger. """
     logger = logging.getLogger("PaketdienstLogger")
-    logger.setLevel(logging.INFO)
+    logger.setLevel(log_level)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
     file_handler = logging.FileHandler(log_file)
@@ -72,33 +85,37 @@ def main():
     log_file = os.path.join(log_folder, f"{LOG_FILE_PREFIX}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
 
     # Konfiguriere den Logger
-    logger = configure_logger(log_file)
+    with open(UPDATE_CONFIG_FILE) as config_file:
+        config = json.load(config_file)
+
+    log_level = getattr(logging, config.get("log_level", "INFO").upper())
+    logger = configure_logger(log_file, log_level)
 
     log_step(logger, "Aktualisierungsprozess gestartet.")
 
     # Führe die Aktualisierung durch
-    with open(UPDATE_CONFIG_FILE) as config_file:
-        config = json.load(config_file)
-
     auto_update_packages = config.get("auto_update", [])
     manual_update_packages = config.get("manual_update", [])
 
-    upgrade_pip(logger)
+    if config.get("enable_email", False):
+        upgrade_pip(logger)
 
-    # Jedes Paket überprüfen und ggf. aktualisieren
-    for dist in metadata.distributions():
-        package = dist.metadata['Name']
-        if package in auto_update_packages:
-            # Automatische Aktualisierung
-            batch_upgrade_decision(logger, auto_update_packages)
-        elif package in manual_update_packages:
-            # Manuelle Aktualisierung mit Bestätigung
-            manual_confirmation_upgrade(logger, package)
+        # Jedes Paket überprüfen und ggf. aktualisieren
+        for dist in metadata.distributions():
+            package = dist.metadata['Name']
+            if package in auto_update_packages:
+                # Automatische Aktualisierung
+                batch_upgrade_decision(logger, auto_update_packages)
+            elif package in manual_update_packages:
+                # Manuelle Aktualisierung mit Bestätigung
+                manual_confirmation_upgrade(logger, package)
 
-    log_step(logger, "Aktualisierungsprozess abgeschlossen.")
+        log_step(logger, "Aktualisierungsprozess abgeschlossen.")
 
-    # Sende eine E-Mail mit dem Log-File-Anhang
-    send_email(log_file)
+        # Sende eine E-Mail mit dem Log-File-Anhang
+        send_email(log_file)
+    else:
+        log_step(logger, "E-Mail-Funktion ist deaktiviert. Der Aktualisierungsprozess wird ohne E-Mail-Benachrichtigung durchgeführt.")
 
 
 if __name__ == "__main__":

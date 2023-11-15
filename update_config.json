@@ -1,4 +1,12 @@
 {
-    "auto_update": ["numpy", "pandas"],
-    "manual_update": ["django", "flask"]
+  "?_comments": {
+    "auto_update": "Liste der Pakete für automatische Aktualisierung",
+    "manual_update": "Liste der Pakete für manuelle Aktualisierung",
+    "log_level": "Protokollierungsstufe (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+    "enable_email": "Schalter, ob eine eMail gesendet werden soll oder nicht. (true, false)"
+  },
+  "auto_update": ["pandas", "numpy"],
+  "manual_update": ["requests"],
+  "log_level": "DEBUG",
+  "enable_email": false
 }
