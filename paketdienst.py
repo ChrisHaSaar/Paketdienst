@@ -29,6 +29,11 @@ def dry_run_upgrade(package):
     result = subprocess.run(f"pip install --upgrade --dry-run {package}", shell=True, capture_output=True, text=True)
     return result.stdout
 
+def user_decision(package):
+    """ Fragt den Benutzer, ob das Paket aktualisiert werden soll. """
+    decision = input(f"Möchten Sie {package} aktualisieren? [y/n]: ").strip().lower()
+    return decision == 'y'
+
 # Pip zuerst aktualisieren
 upgrade_pip()
 
@@ -44,14 +49,20 @@ with open(log_file, "w") as log:
     distributions = metadata.distributions()
     packages = [dist.metadata['Name'] for dist in distributions]
 
-    # Jedes Paket aktualisieren und Log führen
+    # Jedes Paket überprüfen und ggf. aktualisieren
     for package in packages:
         log.write(f"Überprüfe mögliche Aktualisierungen für {package} (Dry Run)\n")
         dry_run_result = dry_run_upgrade(package)
         log.write(dry_run_result)
         log.write("\n")
 
-        # Hier können Sie entscheiden, ob Sie das Upgrade basierend auf dem Dry-Run-Ergebnis durchführen möchten
-        # ...
+        # Ergebnis anzeigen und Benutzer um Entscheidung bitten
+        print(f"Ergebnis des Dry Runs für {package}:\n{dry_run_result}")
+        if user_decision(package):
+            subprocess.run(f"pip install --upgrade {package}", shell=True)
+            print(f"{package} wurde aktualisiert.")
+        else:
+            print(f"Aktualisierung von {package} übersprungen.")
 
 print(f"Aktualisierung abgeschlossen. Log-Datei gespeichert unter: {log_file}")
+Y
