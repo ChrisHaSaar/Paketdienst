@@ -1,0 +1,6 @@
+Ergebnis des Dry Runs für pip:
+Requirement already satisfied: pip in c:\entwicklung\_python-projekte\paketdienst\venv\lib\site-packages (23.3.1)
+
+pip wurde aktualisiert:
+Requirement already satisfied: pip in c:\entwicklung\_python-projekte\paketdienst\venv\lib\site-packages (23.3.1)
+

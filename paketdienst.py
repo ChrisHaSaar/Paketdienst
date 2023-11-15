@@ -51,18 +51,19 @@ with open(log_file, "w") as log:
 
     # Jedes Paket überprüfen und ggf. aktualisieren
     for package in packages:
-        log.write(f"Überprüfe mögliche Aktualisierungen für {package} (Dry Run)\n")
         dry_run_result = dry_run_upgrade(package)
-        log.write(dry_run_result)
-        log.write("\n")
+        log.write(f"Ergebnis des Dry Runs für {package}:\n{dry_run_result}\n")
 
         # Ergebnis anzeigen und Benutzer um Entscheidung bitten
         print(f"Ergebnis des Dry Runs für {package}:\n{dry_run_result}")
         if user_decision(package):
-            subprocess.run(f"pip install --upgrade {package}", shell=True)
+            update_result = subprocess.run(f"pip install --upgrade {package}", shell=True, capture_output=True, text=True)
+            log.write(f"{package} wurde aktualisiert:\n{update_result.stdout}\n")
+            if update_result.stderr:
+                log.write(f"Fehler bei der Aktualisierung von {package}:\n{update_result.stderr}\n")
             print(f"{package} wurde aktualisiert.")
         else:
+            log.write(f"Aktualisierung von {package} übersprungen.\n")
             print(f"Aktualisierung von {package} übersprungen.")
 
 print(f"Aktualisierung abgeschlossen. Log-Datei gespeichert unter: {log_file}")
-Y
