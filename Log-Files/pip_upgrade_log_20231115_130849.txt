@@ -1,6 +1,0 @@
-Aktualisiere pip
-Requirement already satisfied: pip in ./venv/lib/python3.12/site-packages (23.3.1)
-
-Aktualisiere setuptools
-Requirement already satisfied: setuptools in ./venv/lib/python3.12/site-packages (68.2.2)
-

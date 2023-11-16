@@ -1,3 +1,0 @@
-Überprüfe mögliche Aktualisierungen für pip (Dry Run)
-Requirement already satisfied: pip in c:\entwicklung\_python-projekte\paketdienst\venv\lib\site-packages (23.3.1)
-
